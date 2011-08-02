@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TddbcTokyo16", "TddbcTokyo16\TddbcTokyo16.csproj", "{8E32A478-7E71-4BDF-B1B1-90FD01DC81FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TddbcTokyo16Test", "TddbcTokyo16Test\TddbcTokyo16Test.csproj", "{F1C77552-2DD3-456B-9449-F2FD1577F243}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E32A478-7E71-4BDF-B1B1-90FD01DC81FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E32A478-7E71-4BDF-B1B1-90FD01DC81FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E32A478-7E71-4BDF-B1B1-90FD01DC81FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E32A478-7E71-4BDF-B1B1-90FD01DC81FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1C77552-2DD3-456B-9449-F2FD1577F243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1C77552-2DD3-456B-9449-F2FD1577F243}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1C77552-2DD3-456B-9449-F2FD1577F243}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1C77552-2DD3-456B-9449-F2FD1577F243}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
