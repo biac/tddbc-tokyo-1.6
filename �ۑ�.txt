@@ -54,6 +54,20 @@ putの引数でkey,value,date(時刻情報)を渡せるようにする。
 
 
 17:05 2011/08/03 - 不要なコメント等をクリーンアップして、コミット
+	Git tree: https://github.com/biac/tddbc-tokyo-1.6/tree/5d660e7bc85244db99fcfd2a093b6da69f8317f9
+
+17:38 2011/08/03 - 1) Put() の引数に time を追加
+Put2Test01_ひとつ登録_ひとつ取得()
+DumpTest02_2つ登録してDump_ただし時刻順で出すのでPut時と順番が変わる() …ありゃ? 挙動不審。KeyValueTime.CompareTo() を間違えてる。
+KeyValueTime.CompareTo() のテストケースと実装をやり直し orz
+DumpTest02_2つ登録してDump_ただし時刻順で出すのでPut時と順番が変わる() …改めて、実装
+
+※ ん? 複数登録時はtime付けない? 分からないので後回し! > 引数に複数指定して追加する関数の場合、後ろにあるものほど新しいとみなす。
+
+18:15 2011/08/03
+
+
+■ T16MAIN-6:
 
 
 

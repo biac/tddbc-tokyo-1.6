@@ -29,13 +29,14 @@ namespace TddbcTokyo16 {
 		public int CompareTo(object obj) {
 			KeyValueTime kvt = obj as KeyValueTime;
 
-			if (kvt.Key == this.Key && kvt.Value == this.Value)
-				return DateTime.Compare(this.Time.Value, kvt.Time.Value);
+			if(kvt.Time != this.Time)
+				return DateTime.Compare(kvt.Time.Value, this.Time.Value);
 
-			if (kvt.Key == this.Key)
-				return string.Compare(kvt.Value, this.Value);
+			if(kvt.Value != this.Value)
+				return string.Compare(this.Value, kvt.Value);
 
-			return string.Compare(kvt.Key, this.Key);
+			return string.Compare(this.Key, kvt.Key);
 		}
+
 	}
 }

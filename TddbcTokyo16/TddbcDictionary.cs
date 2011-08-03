@@ -17,6 +17,12 @@ namespace TddbcTokyo16 {
 			this._dic.Add(new KeyValueTime(key, value, null));
 		}
 
+		public void Put(string key, string value, DateTime time) {
+			//throw new NotImplementedException();
+			this._dic.Add(new KeyValueTime(key, value, time));
+		}
+
+
 		public string Get(string key) {
 			if (key == null)
 				throw new ArgumentNullException();

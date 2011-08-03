@@ -63,28 +63,49 @@ namespace TddbcTokyo16Test {
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);
 			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value1", dt.AddSeconds(1.0)); //新しい → 前に来る
 
-			Assert.That(kvt1.CompareTo(kvt2), Is.LessThan(0));
-			Assert.That(kvt2.CompareTo(kvt1), Is.GreaterThan(0));
+			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
+			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
 		}
 
 		[Test()]
-		public void CompareToTest03_Key_Value_Timeともnullではない_Valueが違う() {
+		public void CompareToTest03_Key_Value_Timeともnullではない_ValueとTimeが違う_Timeが優先() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
-			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);	//こっちが前
-			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value2", dt.AddSeconds(1.0));
+			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);	//Valueの比較だけならこっちが前だけど…
+			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value2", dt.AddSeconds(1.0)); //新しい → 前に来る
 
 			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
 			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
 		}
 
 		[Test()]
-		public void CompareToTest04_Key_Value_Timeともnullではない_Keyが違う() {
+		public void CompareToTest04_Key_Value_Timeともnullではない_KeyとTimeが違う_Timeが優先() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
-			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);	//こっちが前
-			KeyValueTime kvt2 = new KeyValueTime("BBB", "Value1", dt.AddSeconds(1.0));
+			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);	//Keyの比較だけならこっちが前だけど…
+			KeyValueTime kvt2 = new KeyValueTime("BBB", "Value1", dt.AddSeconds(1.0)); //新しい → 前に来る
 
 			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
 			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
 		}
+
+		[Test()]
+		public void CompareToTest05_Key_Value_Timeともnullではない_Timeが同じ_Valueでの比較になる() {
+			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
+			KeyValueTime kvt1 = new KeyValueTime("AAA", "ValueB", dt);	
+			KeyValueTime kvt2 = new KeyValueTime("BBB", "ValueA", dt);	//Valueの比較で、こっちが前に来る 
+
+			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
+			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
+		}
+
+		[Test()]
+		public void CompareToTest06_Key_Value_Timeともnullではない_TimeもValueも同じ_Keyでの比較になる() {
+			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
+			KeyValueTime kvt1 = new KeyValueTime("BBB", "Value", dt);
+			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value", dt);	//Keyの比較で、こっちが前に来る 
+
+			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
+			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
+		}
+	
 	}
 }
