@@ -168,6 +168,7 @@ TODO: Get(key)で、該当するkeyが無かった時の挙動が不明。Dump�
 23:39 2011/08/03
 不要なコメント等をクリーンアップしてコミット
 製品コードは合計140行くらい。テストケースは24個。
-
+	Git tree: https://github.com/biac/tddbc-tokyo-1.6/tree/b69e352b0c3d4b602d2d25f633184812a0cc01f5
+	TddbcTokyo1.6_CS02c.zip
 
 
