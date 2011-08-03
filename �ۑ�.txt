@@ -48,7 +48,14 @@ putの引数でkey,value,date(時刻情報)を渡せるようにする。
 
 14:58 2011/08/03 - KeyValueTime の実装完了。KeyValueTime を使うように修正完了。それに伴い、テストケースをいくつか追加。
 
-// ここでコミット: TddbcTokyo1.6_CS02a.zip / Git
+// ここでコミット: TddbcTokyo1.6_CS02a.zip
+	Git tree: https://github.com/biac/tddbc-tokyo-1.6/tree/b4838b0f8bfa075a421dc6e23feeb61ae83dfa86
+	差分: https://github.com/biac/tddbc-tokyo-1.6/commit/b4838b0f8bfa075a421dc6e23feeb61ae83dfa86
+
+
+17:05 2011/08/03 - 不要なコメント等をクリーンアップして、コミット
+
+
 
 
 

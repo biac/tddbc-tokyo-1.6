@@ -74,11 +74,14 @@ namespace TddbcTokyo16Test {
 
 			//実際にコンソールにdumpするには、こうする
 			foreach (var kv in dump) {
-				Console.WriteLine("{0}: '{1}'", kv.Key, kv.Value ?? "(null)");
+				Console.WriteLine("{0}: '{1}' at {2}", 
+									kv.Key, 
+									kv.Value ?? "(null)", 
+									kv.Time.HasValue ? kv.Time.Value.ToString("HH:mm:ss") : "(none)" );
 			}
 			//実行結果:
-			//BBB: 'Test'
-			//AAA: '(null)'
+			//BBB: 'Test' at (none)
+			//AAA: '(null)' at (none)
 		}
 
 

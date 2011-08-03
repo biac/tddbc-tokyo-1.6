@@ -5,12 +5,9 @@ using System.Linq;
 namespace TddbcTokyo16 {
 	public class TddbcDictionary {
 
-		//private Dictionary<string, string> _dic = new Dictionary<string, string>();
 		private SortedSet<KeyValueTime> _dic = new SortedSet<KeyValueTime>();
 
 		public void Put(string key, string value) {
-			//this._dic[key] = value;
-
 			KeyValueTime existing = this._dic.FirstOrDefault(kvt => string.Equals(kvt.Key, key));
 			if (existing != null) {
 				existing.Value = value;
@@ -21,8 +18,6 @@ namespace TddbcTokyo16 {
 		}
 
 		public string Get(string key) {
-			//return this._dic[key];
-
 			if (key == null)
 				throw new ArgumentNullException();
 
@@ -30,13 +25,10 @@ namespace TddbcTokyo16 {
 		}
 
 		public IList<KeyValueTime> Dump() {
-			//return this._dic.ToList<KeyValuePair<string, string>>();
 			return this._dic.ToList();
 		}
 
 		public void Delete(string key) {
-			//this._dic.Remove(key);
-
 			if (key == null)
 				throw new ArgumentNullException();
 

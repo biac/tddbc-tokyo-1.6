@@ -7,6 +7,7 @@ biac 2011/8/2～
 
 開発環境: Visual C# 2010 Express Edition + NUnit 2.6β
 
+GitHub: git@github.com:biac/tddbc-tokyo-1.6.git
 
 
 LEGEND:

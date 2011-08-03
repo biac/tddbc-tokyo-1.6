@@ -44,8 +44,9 @@ namespace TddbcTokyo16Test {
 
 
 
-		// IComparable の実装
+		// IComparable の実装: SortedSet に突っ込みたいので。
 		// ※ 型が合わないときは ArgumentException
+		//TODO: とりあえず適当に仕様を決めたけど、たぶん違う。(Timeだけの比較が正解?) …無駄な実装をしてしまったorz
 
 		[Test()]
 		public void CompareToTest01_Key_Value_Timeともnullではなく等しい() {
