@@ -8,6 +8,16 @@ namespace TddbcTokyo16Test {
 	[TestFixture()]
 	public class TddbcDictionaryTest {
 
+		[TearDown()]
+		public void TearDown() { 
+#if DEBUG
+			SystemClock.TestClearTime();
+#endif
+		}
+
+
+
+
 		/*
 		 ■ T16MAIN-1: putでkeyとvalueを追加し、dumpで一覧表示、getでkeyに対応するvalueを取得できる
 			put で keyとvalueを追加する
@@ -283,6 +293,103 @@ namespace TddbcTokyo16Test {
 		}
 
 		//TODO: ん? 複数登録時はtime付けない? 分からないので後回し! > 引数に複数指定して追加する関数の場合、後ろにあるものほど新しいとみなす。
+
+
+
+		/*
+		 ■ T16MAIN-6: dumpの引数に時刻を指定できるようにする。dump関数は時刻が指定された場合、指定時刻以降のデータのみを表示する
+			dumpの引数に時刻（秒単位）を指定できるようにする。
+			dump関数は時刻が指定された場合、指定時刻以降のデータのみを表示する
+		 */
+
+		[Test()]
+		public void Dump02Test01_3つ登録してDump_時刻指定でひとつしか出ない() {
+			const string key1 = "AAA";
+			const string value1 = "Test1";
+			DateTime time1 = new DateTime(2011, 8, 3, 17, 40, 0);
+			const string key2 = "BBB";
+			const string value2 = "Test2";
+			DateTime time2 = time1.AddSeconds(1.0); //こっちが新しい → Dump(time2) で、これだけが出て来る
+
+			TddbcDictionary dic = new TddbcDictionary();
+			dic.Put(key1, value1, time1);
+			dic.Put(key2, value2, time2);
+
+			IList<KeyValueTime> dump = dic.Dump(time2);
+			Assert.That(dump.Count, Is.EqualTo(1));
+			Assert.That(dump[0].Key, Is.EqualTo(key2));
+			Assert.That(dump[0].Value, Is.EqualTo(value2));
+			Assert.That(dump[0].Time, Is.EqualTo(time2));
+		}
+
+
+
+		/*
+		 ■ T16MAIN-7: deleteの引数に分・秒を指定できる。deleteは分を指定された場合、「現在時刻-引数の分・秒」よりも古いデータをすべて削除する
+			deleteの引数に分・秒を指定できる。deleteは分・秒を指定された場合、データの時刻情報が「現在時刻-引数の分・秒」よりも古いデータをすべて削除する
+		 */
+
+		// ※ おっと、現在時刻が出てきた。 先に、現在時刻を提供するクラスを用意しないと! → SystemClockTest
+
+#if DEBUG
+		[Test()]
+		public void Delete2Test01_秒を指定() {
+			const string key1 = "AAA";
+			const string value1 = "Test1";
+			DateTime time1 = new DateTime(2011, 8, 3, 17, 40, 0);
+			const string key2 = "BBB";
+			const string value2 = "Test2";
+			DateTime time2 = time1.AddSeconds(1.0); 
+
+			TddbcDictionary dic = new TddbcDictionary();
+			dic.Put(key1, value1, time1);
+			dic.Put(key2, value2, time2);
+
+			// 現在時刻を time2 より 2秒後にセット → 現在時刻から見ると、time2 は 2秒前、time1 は 3秒前
+			SystemClock.TestSetTime(time2.AddSeconds(2.0));
+
+			dic.Delete(0, 3);
+			Assert.That(dic.Dump().Count, Is.EqualTo(2));	//1件も削除されない
+
+			dic.Delete(0, 2);
+			IList<KeyValueTime> dump = dic.Dump();
+			Assert.That(dump.Count, Is.EqualTo(1));	//time1 だけ削除される
+			Assert.That(dump[0].Key, Is.EqualTo(key2));	//time2 の方のデータは残っている
+
+			dic.Delete(0, 1);
+			Assert.That(dic.Dump().Count, Is.EqualTo(0));	//time2 も削除される
+		}
+#endif
+
+#if DEBUG
+		[Test()]
+		public void Delete2Test02_分を指定() {
+			const string key1 = "AAA";
+			const string value1 = "Test1";
+			DateTime time1 = new DateTime(2011, 8, 3, 17, 40, 0);
+			const string key2 = "BBB";
+			const string value2 = "Test2";
+			DateTime time2 = time1.AddSeconds(1.0);
+
+			TddbcDictionary dic = new TddbcDictionary();
+			dic.Put(key1, value1, time1);
+			dic.Put(key2, value2, time2);
+
+			// 現在時刻を time2 より 1分後にセット → 現在時刻から見ると、time2 は 60秒前、time1 は 61秒前
+			SystemClock.TestSetTime(time2.AddMinutes(1.0));
+
+			dic.Delete(2, 0);
+			Assert.That(dic.Dump().Count, Is.EqualTo(2));	//1件も削除されない
+
+			dic.Delete(1, 0);
+			IList<KeyValueTime> dump = dic.Dump();
+			Assert.That(dump.Count, Is.EqualTo(1));	//time1 だけ削除される
+			Assert.That(dump[0].Key, Is.EqualTo(key2));	//time2 の方のデータは残っている
+
+			dic.Delete(0, 0);
+			Assert.That(dic.Dump().Count, Is.EqualTo(0));	//time2 も削除される
+		}
+#endif
 
 	}
 }

@@ -30,9 +30,16 @@ namespace TddbcTokyo16 {
 			return this._dic.First(kvt => kvt.Key == key).Value;
 		}
 
+
 		public IList<KeyValueTime> Dump() {
 			return this._dic.ToList();
 		}
+
+		public IList<KeyValueTime> Dump(DateTime time) {
+			//return this._dic.Where(kvt => kvt.Time.HasValue ? (kvt.Time.Value >= time) : false).ToList();
+			return this._dic.Where(kvt => (kvt.Time.Value >= time)).ToList();
+		}
+
 
 		public void Delete(string key) {
 			if (key == null)
@@ -40,6 +47,12 @@ namespace TddbcTokyo16 {
 
 			this._dic.RemoveWhere(kvt => kvt.Key == key);
 		}
+
+		internal void Delete(int passedMinute, int passedSecond) {
+			DateTime limitTime = SystemClock.Now.AddMinutes(-passedMinute).AddSeconds(-passedSecond);
+			this._dic.RemoveWhere(kvt => (kvt.Time < limitTime));
+		}
+
 
 		public void MultiPut(IList<KeyValuePair<string, string>> data) {
 			foreach (var kv in data) {
@@ -50,5 +63,7 @@ namespace TddbcTokyo16 {
 				this.Put(kv.Key, kv.Value);
 			}
 		}
+
+
 	}
 }

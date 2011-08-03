@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="KeyValueTime.cs" />
+    <Compile Include="SystemClock.cs" />
     <Compile Include="TddbcDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
