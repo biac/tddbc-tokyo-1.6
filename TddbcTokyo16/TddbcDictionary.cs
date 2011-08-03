@@ -8,17 +8,29 @@ namespace TddbcTokyo16 {
 		private SortedSet<KeyValueTime> _dic = new SortedSet<KeyValueTime>();
 
 		public void Put(string key, string value) {
-			KeyValueTime existing = this._dic.FirstOrDefault(kvt => string.Equals(kvt.Key, key));
-			if (existing != null) {
-				existing.Value = value;
-				return;
-			}
+			//KeyValueTime existing = this._dic.FirstOrDefault(kvt => string.Equals(kvt.Key, key));
+			//if (existing != null) {
+			//    existing.Value = value;
+			//    existing.Time = SystemClock.Now;
+			//    return;
+			//}
 
-			this._dic.Add(new KeyValueTime(key, value, null));
+			//this._dic.Add(new KeyValueTime(key, value, null));
+			this.Put(key, value, SystemClock.Now);
 		}
 
-		public void Put(string key, string value, DateTime time) {
-			//throw new NotImplementedException();
+		private void Put(string key, string value, DateTime time) {
+			KeyValueTime existing = this._dic.FirstOrDefault(kvt => string.Equals(kvt.Key, key));
+			if (existing != null) {
+				this._dic.Remove(existing);	//一旦削除して、改めて挿入しなおせば、正しくソートされる。
+
+				existing.Value = value;
+				existing.Time = time;
+
+				this._dic.Add(existing);
+				return;
+			}
+	
 			this._dic.Add(new KeyValueTime(key, value, time));
 		}
 
@@ -37,7 +49,8 @@ namespace TddbcTokyo16 {
 
 		public IList<KeyValueTime> Dump(DateTime time) {
 			//return this._dic.Where(kvt => kvt.Time.HasValue ? (kvt.Time.Value >= time) : false).ToList();
-			return this._dic.Where(kvt => (kvt.Time.Value >= time)).ToList();
+			//return this._dic.Where(kvt => (kvt.Time.Value >= time)).ToList();
+			return this._dic.Where(kvt => (kvt.Time >= time)).ToList();
 		}
 
 
@@ -59,8 +72,11 @@ namespace TddbcTokyo16 {
 				if (kv.Key == null)
 					throw new ArgumentNullException();
 			}
+
+			DateTime time = SystemClock.Now;
 			foreach (var kv in data) {
-				this.Put(kv.Key, kv.Value);
+				this.Put(kv.Key, kv.Value, time);
+				time = time.AddMilliseconds(1.0);	//TODO: 次の Put()/MultiPut() の時刻が近いと、これでは前後関係がおかしくなる。
 			}
 		}
 

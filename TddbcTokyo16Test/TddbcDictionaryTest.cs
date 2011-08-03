@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using NUnit.Framework;
 using TddbcTokyo16;
@@ -28,9 +29,12 @@ namespace TddbcTokyo16Test {
 		 */
 		//TODO: keyとvalueの型は? …分からないから、とりあえずstringにしとくか f(^^;
 
-
+#if DEBUG
 		[Test()]
 		public void PutGetTest01_ひとつ登録_ひとつ取得() {
+			DateTime time = new DateTime(2011, 8, 3, 17, 40, 0);
+			SystemClock.TestSetTime(time);
+
 			const string key = "AAA";
 			const string value = "Test";
 
@@ -39,7 +43,9 @@ namespace TddbcTokyo16Test {
 
 			string result = dic.Get(key);
 			Assert.That(result, Is.EqualTo(value));
+			Assert.That(dic.Dump().First().Time, Is.EqualTo(time));
 		}
+#endif
 
 		[Test()]
 		public void PutGetTest02_keyにnull_例外() {
@@ -63,16 +69,25 @@ namespace TddbcTokyo16Test {
 			Assert.Throws<ArgumentNullException>(new TestDelegate(() => dic.Get(null)));
 		}
 
+#if DEBUG
 		[Test()]
 		public void DumpTest01_2つ登録してDump_ただし2つめのvalueはnull() {
+			DateTime time1 = new DateTime(2011, 8, 3, 17, 40, 0);
+			DateTime time2 = time1.AddSeconds(1.0);
+
 			const string key1 = "BBB";
 			const string value1 = "Test";
 			const string key2 = "AAA";
 			const string value2 = null;
 	
 			TddbcDictionary dic = new TddbcDictionary();
+
+			SystemClock.TestSetTime(time1);
 			dic.Put(key1, value1);
+
+			SystemClock.TestSetTime(time2);
 			dic.Put(key2, value2);
+
 
 			IList<KeyValueTime> dump = dic.Dump();
 			//Assert.That(dump[0].Key, Is.EqualTo(key1));
@@ -82,8 +97,10 @@ namespace TddbcTokyo16Test {
 			// KeyValueTime の CompareTo() 実装によって、順序が逆転した
 			Assert.That(dump[0].Key, Is.EqualTo(key2));
 			Assert.That(dump[0].Value, Is.Null);
+			Assert.That(dump[0].Time, Is.EqualTo(time2));
 			Assert.That(dump[1].Key, Is.EqualTo(key1));
 			Assert.That(dump[1].Value, Is.EqualTo(value1));
+			Assert.That(dump[1].Time, Is.EqualTo(time1));
 
 
 			//実際にコンソールにdumpするには、こうする
@@ -91,13 +108,14 @@ namespace TddbcTokyo16Test {
 				Console.WriteLine("{0}: '{1}' at {2}", 
 									kv.Key, 
 									kv.Value ?? "(null)", 
-									kv.Time.HasValue ? kv.Time.Value.ToString("HH:mm:ss") : "(none)" );
+									//kv.Time.HasValue ? kv.Time.Value.ToString("HH:mm:ss") : "(none)" );
+									kv.Time.ToString("HH:mm:ss"));
 			}
 			//実行結果:
-			//AAA: '(null)' at (none)
-			//BBB: 'Test' at (none)
+			//AAA: '(null)' at 17:40:01
+			//BBB: 'Test' at 17:40:00
 		}
-
+#endif
 
 
 		/*
@@ -149,23 +167,34 @@ namespace TddbcTokyo16Test {
 			putで既に存在するkeyの場合はvalueを更新する
 		 */
 
+#if DEBUG
 		[Test()]
 		public void PutGetTest03_2回登録ただし同じkey() {
+			DateTime time1 = new DateTime(2011, 8, 3, 17, 40, 0);
+			DateTime time2 = time1.AddSeconds(3.0);
+
 			const string key = "AAA";
 			const string value1 = "Test1";
 			const string value2 = "Test2";
 
 			TddbcDictionary dic = new TddbcDictionary();
+
+			SystemClock.TestSetTime(time1);
 			dic.Put(key, value1);
+
+			SystemClock.TestSetTime(time2);
 			dic.Put(key, value2);
+
 
 			string result = dic.Get(key);
 			Assert.That(result, Is.EqualTo(value2));
 
 			// KeyValueTime の導入で、次が RED になる。(今までは、Dictionary<> が上手くやってくれていた)
 			Assert.That(dic.Dump().Count, Is.EqualTo(1));
-		}
 
+			Assert.That(dic.Dump()[0].Time, Is.EqualTo(time2));
+		}
+#endif
 
 
 		/*
@@ -176,12 +205,18 @@ namespace TddbcTokyo16Test {
 			指定した引数の中にnullのキーがある場合、例外を投げ、状態を元に戻す。
 		 */
 
+#if DEBUG
 		[Test()]
 		public void MultiPutTest01_複数まとめて追加_重複キーあり_既存キーもあり() {
+			DateTime time1 = new DateTime(2011, 8, 3, 17, 40, 0);
+			DateTime time2 = time1.AddSeconds(3.0);
+	
 			// 既存データ
 			const string key = "AAA";
 			const string value = "Test";
 			TddbcDictionary dic = new TddbcDictionary();
+
+			SystemClock.TestSetTime(time1);
 			dic.Put(key, value);
 
 			// まとめて追加
@@ -193,14 +228,27 @@ namespace TddbcTokyo16Test {
 					new KeyValuePair<string, string>("Key3", "Value3"),
 					new KeyValuePair<string, string>("AAA", "Value4"),	//既存キーと同じ
 				};
-			dic.MultiPut(data);
+			SystemClock.TestSetTime(time2);
+			dic.MultiPut(data);	//データ1件ごとに、1mSecずつズラす
 
 			Assert.That(dic.Dump().Count, Is.EqualTo(4));
-			Assert.That(dic.Get("Key1"), Is.EqualTo("Value1"));
-			Assert.That(dic.Get("Key2"), Is.EqualTo("Value2B"));
-			Assert.That(dic.Get("Key3"), Is.EqualTo("Value3"));
-			Assert.That(dic.Get("AAA"), Is.EqualTo("Value4"));
+
+			//Assert.That(dic.Get("Key1"), Is.EqualTo("Value1"));
+			//Assert.That(dic.Get("Key2"), Is.EqualTo("Value2B"));
+			//Assert.That(dic.Get("Key3"), Is.EqualTo("Value3"));
+			//Assert.That(dic.Get("AAA"), Is.EqualTo("Value4"));
+			// Dump() すると逆順になる (時刻の新しいものから)
+			IList<KeyValueTime> dump = dic.Dump();
+			Assert.That(dump[0].Key, Is.EqualTo("AAA"));
+			Assert.That(dump[0].Value, Is.EqualTo("Value4"));
+			Assert.That(dump[1].Key, Is.EqualTo("Key3"));
+			Assert.That(dump[1].Value, Is.EqualTo("Value3"));
+			Assert.That(dump[2].Key, Is.EqualTo("Key2"));
+			Assert.That(dump[2].Value, Is.EqualTo("Value2B"));
+			Assert.That(dump[3].Key, Is.EqualTo("Key1"));
+			Assert.That(dump[3].Value, Is.EqualTo("Value1"));
 		}
+#endif
 
 		[Test()]
 		public void MultiPutTest02_複数まとめて追加_nullキーあり_例外が出てロールバックされる() {
@@ -252,24 +300,29 @@ namespace TddbcTokyo16Test {
 		// KeyValueTime を使うように変更し終わったので、 T16MAIN-5 を実装していく。
 		// 1) Put() の引数に time を追加 - これは、Put(key, value, time) のオーバーロードを追加実装する。
 		//		※ オーバーロードが出来上がってから、既存の Put(Key, value) をどうするか考える。
+#if DEBUG
 		[Test()]
 		public void Put2Test01_ひとつ登録_ひとつ取得() {
 			const string key = "AAA";
 			const string value = "Test";
 			DateTime time = new DateTime(2011, 8, 3, 17, 40, 0);
+			SystemClock.TestSetTime(time);
 
 			TddbcDictionary dic = new TddbcDictionary();
-			dic.Put(key, value, time);
+			//dic.Put(key, value, time);
+			dic.Put(key, value);
 
 			string result = dic.Get(key);
 			Assert.That(result, Is.EqualTo(value));
 
-			// Put() した time は、ちゃんと保持されているか?
+			// Put() したときの time は、ちゃんと保持されているか?
 			IList<KeyValueTime> data = dic.Dump();
 			Assert.That(data[0].Time, Is.EqualTo(time));
 		}
+#endif
 
 		// 2) dump関数は時刻が新しい方から古い方へ順にkey、valueを出力するように変更する。
+#if DEBUG
 		[Test()]
 		public void DumpTest02_2つ登録してDump_ただし時刻順で出すのでPut時と順番が変わる() {
 			const string key1 = "AAA";
@@ -280,8 +333,12 @@ namespace TddbcTokyo16Test {
 			DateTime time2 = time1.AddSeconds(1.0); //こっちが新しい → Dump 順は逆になる
 
 			TddbcDictionary dic = new TddbcDictionary();
-			dic.Put(key1, value1, time1);
-			dic.Put(key2, value2, time2);
+			//dic.Put(key1, value1, time1);
+			SystemClock.TestSetTime(time1);
+			dic.Put(key1, value1);
+			//dic.Put(key2, value2, time2);
+			SystemClock.TestSetTime(time2);
+			dic.Put(key2, value2);
 
 			IList<KeyValueTime> dump = dic.Dump();
 			Assert.That(dump[0].Key, Is.EqualTo(key2));
@@ -291,8 +348,9 @@ namespace TddbcTokyo16Test {
 			Assert.That(dump[1].Value, Is.EqualTo(value1));
 			Assert.That(dump[1].Time, Is.EqualTo(time1));
 		}
+#endif
 
-		//TODO: ん? 複数登録時はtime付けない? 分からないので後回し! > 引数に複数指定して追加する関数の場合、後ろにあるものほど新しいとみなす。
+		//TODO: ん? 複数登録時はtime付けない? 分からないので後回し! > 引数に複数指定して追加する関数の場合、後ろにあるものほど新しいとみなす。 → T16MAIN-8 で解決
 
 
 
@@ -302,6 +360,7 @@ namespace TddbcTokyo16Test {
 			dump関数は時刻が指定された場合、指定時刻以降のデータのみを表示する
 		 */
 
+#if DEBUG
 		[Test()]
 		public void Dump02Test01_3つ登録してDump_時刻指定でひとつしか出ない() {
 			const string key1 = "AAA";
@@ -312,8 +371,12 @@ namespace TddbcTokyo16Test {
 			DateTime time2 = time1.AddSeconds(1.0); //こっちが新しい → Dump(time2) で、これだけが出て来る
 
 			TddbcDictionary dic = new TddbcDictionary();
-			dic.Put(key1, value1, time1);
-			dic.Put(key2, value2, time2);
+			//dic.Put(key1, value1, time1);
+			SystemClock.TestSetTime(time1);
+			dic.Put(key1, value1);
+			//dic.Put(key2, value2, time2);
+			SystemClock.TestSetTime(time2);
+			dic.Put(key2, value2);
 
 			IList<KeyValueTime> dump = dic.Dump(time2);
 			Assert.That(dump.Count, Is.EqualTo(1));
@@ -321,7 +384,7 @@ namespace TddbcTokyo16Test {
 			Assert.That(dump[0].Value, Is.EqualTo(value2));
 			Assert.That(dump[0].Time, Is.EqualTo(time2));
 		}
-
+#endif
 
 
 		/*
@@ -342,8 +405,12 @@ namespace TddbcTokyo16Test {
 			DateTime time2 = time1.AddSeconds(1.0); 
 
 			TddbcDictionary dic = new TddbcDictionary();
-			dic.Put(key1, value1, time1);
-			dic.Put(key2, value2, time2);
+			//dic.Put(key1, value1, time1);
+			SystemClock.TestSetTime(time1);
+			dic.Put(key1, value1);
+			//dic.Put(key2, value2, time2);
+			SystemClock.TestSetTime(time2);
+			dic.Put(key2, value2);
 
 			// 現在時刻を time2 より 2秒後にセット → 現在時刻から見ると、time2 は 2秒前、time1 は 3秒前
 			SystemClock.TestSetTime(time2.AddSeconds(2.0));
@@ -372,8 +439,12 @@ namespace TddbcTokyo16Test {
 			DateTime time2 = time1.AddSeconds(1.0);
 
 			TddbcDictionary dic = new TddbcDictionary();
-			dic.Put(key1, value1, time1);
-			dic.Put(key2, value2, time2);
+			//dic.Put(key1, value1, time1);
+			SystemClock.TestSetTime(time1);
+			dic.Put(key1, value1);
+			//dic.Put(key2, value2, time2);
+			SystemClock.TestSetTime(time2);
+			dic.Put(key2, value2);
 
 			// 現在時刻を time2 より 1分後にセット → 現在時刻から見ると、time2 は 60秒前、time1 は 61秒前
 			SystemClock.TestSetTime(time2.AddMinutes(1.0));
@@ -390,6 +461,45 @@ namespace TddbcTokyo16Test {
 			Assert.That(dic.Dump().Count, Is.EqualTo(0));	//time2 も削除される
 		}
 #endif
+
+
+
+		/*
+		 ■ T16MAIN-8: T16MAIN-5のAPI変更
+			putの引数から時刻を取り除き、現在時刻を使用するようにする
+		 */
+
+		// なるほど、そういうことか! ということで、テストケースの修正が必要
+
+		// 1) Put2Test01_ひとつ登録_ひとつ取得
+		//		変更: 登録時に time を渡さない
+		//		※KeyValueTime の Time は、Nullable じゃなくても良くなる。変える。
+		//		※以降、順次、time を引数に取る Put() を使わないように変えていく
+
+		// 2) PutGetTest01_ひとつ登録_ひとつ取得()
+		//		追加: 登録時の時刻が保持されていること
+
+		// 3) DumpTest01_2つ登録してDump_ただし2つめのvalueはnull
+		//		追加: 登録時の時刻が保持されていること
+
+		// 4) PutGetTest03_2回登録ただし同じkey
+		//		追加: Value だけでなく、Time も更新されていること
+
+		// 5) MultiPutTest01_複数まとめて追加_重複キーあり_既存キーもあり
+		//		追加: 登録時の時刻が保持されていること
+		//		※ 追加仕様「引数に複数指定して追加する関数の場合、後ろにあるものほど新しいとみなす」により、時刻は微妙にズレる。(以前に分からなくて TODO: しておいたもの)
+
+		// 6) Dump02Test01_3つ登録してDump_時刻指定でひとつしか出ない
+		//		変更: 登録ごとに現在時刻を変える
+
+		// 7) Delete2Test01_秒を指定
+		//		変更: 登録ごとに現在時刻を変える
+
+		// 8) Delete2Test02_分を指定
+		//		変更: 登録ごとに現在時刻を変える
+
+		// 9) time を引数に取る Put() を private に
+
 
 	}
 }

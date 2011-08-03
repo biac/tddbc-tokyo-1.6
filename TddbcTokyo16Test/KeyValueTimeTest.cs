@@ -31,22 +31,21 @@ namespace TddbcTokyo16Test {
 			Assert.That(key, Is.EqualTo("AAA"));
 			string val = kvt.Value;
 			Assert.That(val, Is.EqualTo("Value1"));
-			DateTime time = kvt.Time.Value;
+			DateTime time = kvt.Time;
 			Assert.That(time, Is.EqualTo(dt));
 		}
 
-		[Test()]
-		public void Test02_Timeにはnullもセット可能() {
-			KeyValueTime kvt = new KeyValueTime("AAA", "Value1", null);
+		//[Test()]
+		//public void Test02_Timeにはnullもセット可能() {
+		//    KeyValueTime kvt = new KeyValueTime("AAA", "Value1", null);
 
-			Assert.That(kvt.Time, Is.Null);
-		}
-
+		//    Assert.That(kvt.Time, Is.Null);
+		//}
+		// ※ T16MAIN-8 の仕様変更で、null はセット出来なくなった。
 
 
 		// IComparable の実装: SortedSet に突っ込みたいので。
 		// ※ 型が合わないときは ArgumentException
-		//TODO: とりあえず適当に仕様を決めたけど、たぶん違う。(Timeだけの比較が正解?) …無駄な実装をしてしまったorz
 
 		[Test()]
 		public void CompareToTest01_Key_Value_Timeともnullではなく等しい() {
@@ -61,7 +60,7 @@ namespace TddbcTokyo16Test {
 		public void CompareToTest02_Key_Value_Timeともnullではない_Timeだけ違う() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);
-			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value1", dt.AddSeconds(1.0)); //新しい → 前に来る
+			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value1", dt.AddMilliseconds(1.0)); //新しい → 前に来る
 
 			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
 			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
@@ -106,6 +105,25 @@ namespace TddbcTokyo16Test {
 			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
 			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
 		}
-	
+
+		[Test()]
+		public void CompareToTest07_nullとの比較は例外() {
+			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
+			KeyValueTime kvt1 = new KeyValueTime("BBB", "Value", dt);
+
+			Assert.Throws<ArgumentNullException>(new TestDelegate(() => kvt1.CompareTo(null)));
+		}
+
+		[Test()]
+		public void CompareToTest08_互換性の無いオブジェクトとの比較は例外() {
+			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
+			KeyValueTime kvt1 = new KeyValueTime("BBB", "Value", dt);
+			KeyValuePair<string, string> kvp = new KeyValuePair<string, string>("CCC", "Value2");
+
+			Assert.Throws<ArgumentException>(new TestDelegate(() => kvt1.CompareTo(kvp)));
+		}
+
+		//TODO: Key, Value, Time がそれぞれ null のときのテストをやっていない
+
 	}
 }

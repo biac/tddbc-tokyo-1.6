@@ -85,5 +85,82 @@ deleteの引数に分・秒を指定できる。deleteは分・秒を指定さ�
 
 
 
+22:13 2011/08/03
+
+■ T16MAIN-8: T16MAIN-5のAPI変更
+putの引数から時刻を取り除き、現在時刻を使用するようにする
+
+※ ゎはは、そーゆーことかい! f(^^;
+
+これまたけっこう手間を喰う仕様変更だ。生存戦略しませうかw
+
+
+// 1) Put2Test01_ひとつ登録_ひとつ取得
+//		変更: 登録時に time を渡さない
+//		※KeyValueTime の Time は、Nullable じゃなくても良くなる。変える。
+//		※以降、順次、time を引数に取る Put() を使わないように変えていく
+
+KeyValueTime の Time の型を変えると、コンパイルエラーが出るので、順次潰す。
+
+
+// 2) PutGetTest01_ひとつ登録_ひとつ取得()
+//		追加: 登録時の時刻が保持されていること
+
+Assert.That(dic.Dump().First().Time, Is.EqualTo(time)); を追加しても、RED にならないが、そのまま残しておく。
+
+
+// 3) DumpTest01_2つ登録してDump_ただし2つめのvalueはnull
+//		追加: 登録時の時刻が保持されていること
+
+これも、Assert.That(dump[0].Time, Is.EqualTo(time2)); などを追加しても、RED にならないが、そのまま残しておく。
+
+
+// 4) PutGetTest03_2回登録ただし同じkey
+//		追加: Value だけでなく、Time も更新されていること
+
+Assert.That(dic.Dump()[0].Time, Is.EqualTo(time2)); が RED になる。製品コードの Put() を修正。
+
+// 5) MultiPutTest01_複数まとめて追加_重複キーあり_既存キーもあり
+//		追加: 登録時の時刻が保持されていること
+//		※ 追加仕様「引数に複数指定して追加する関数の場合、後ろにあるものほど新しいとみなす」により、時刻は微妙にズレる。(以前に分からなくて TODO: しておいたもの)
+
+MultiPut() 後の Dump() が、想定した順序にならず RED。
+製品コードの MultiPut() を修正。 データ1件ごとに 1mSec ずつズラすようにする。
+
+// 6) Dump02Test01_3つ登録してDump_時刻指定でひとつしか出ない
+//		変更: 登録ごとに現在時刻を変える
+
+変更しても RED にならない。
+
+// 7) Delete2Test01_秒を指定
+//		変更: 登録ごとに現在時刻を変える
+
+変更しても RED にならない。
+
+// 8) Delete2Test02_分を指定
+//		変更: 登録ごとに現在時刻を変える
+
+変更しても RED にならない。
+
+// 9) time を引数に取る Put() を private に
+
+テストケース修正漏れ:
+DumpTest02_2つ登録してDump_ただし時刻順で出すのでPut時と順番が変わる()
+
+
+最後に、リリースビルドをして、#if DEBUG の付け忘れをチェック!
+
+これで要求された仕様は全部満たしたはず。
+残った TODO を転記しておく。
+
+TODO: Key, Value, Time がそれぞれ null のときのテストをやっていない	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16Test\KeyValueTimeTest.cs	126
+TODO: 次の Put()/MultiPut() の時刻が近いと、これでは前後関係がおかしくなる。	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16\TddbcDictionary.cs	79
+TODO: keyとvalueの型は? …分からないから、とりあえずstringにしとくか f(^^;	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16Test\TddbcDictionaryTest.cs	30
+TODO: Get(key)で、該当するkeyが無かった時の挙動が不明。Dumpした個数でテストケースを書いておく。	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16Test\TddbcDictionaryTest.cs	137
+
+これでコミット
+23:07 2011/08/03
+
+
 
 
