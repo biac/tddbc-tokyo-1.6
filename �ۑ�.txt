@@ -51,6 +51,7 @@ putの引数でkey,value,date(時刻情報)を渡せるようにする。
 // ここでコミット: TddbcTokyo1.6_CS02a.zip
 	Git tree: https://github.com/biac/tddbc-tokyo-1.6/tree/b4838b0f8bfa075a421dc6e23feeb61ae83dfa86
 	差分: https://github.com/biac/tddbc-tokyo-1.6/commit/b4838b0f8bfa075a421dc6e23feeb61ae83dfa86
+	TddbcTokyo1.6_CS02a.zip
 
 
 17:05 2011/08/03 - 不要なコメント等をクリーンアップして、コミット
@@ -65,6 +66,7 @@ DumpTest02_2つ登録してDump_ただし時刻順で出すのでPut時と順番
 ※ ん? 複数登録時はtime付けない? 分からないので後回し! > 引数に複数指定して追加する関数の場合、後ろにあるものほど新しいとみなす。
 
 18:15 2011/08/03
+	Git tree: https://github.com/biac/tddbc-tokyo-1.6/tree/b0bf6a12cf7bec9425087877c85aed9a881c4cdd
 
 
 ■ T16MAIN-6: dumpの引数に時刻を指定できるようにする。dump関数は時刻が指定された場合、指定時刻以降のデータのみを表示する
@@ -82,7 +84,7 @@ deleteの引数に分・秒を指定できる。deleteは分・秒を指定さ�
 では、Delete(int passedMinute, int passedSecond) の実装
 
 19:08 2011/08/03 コミット
-
+	Git tree: https://github.com/biac/tddbc-tokyo-1.6/tree/fbd7dda9a4eb3eae53bd6e56bce3053966ac6a22
 
 
 22:13 2011/08/03
@@ -153,14 +155,19 @@ DumpTest02_2つ登録してDump_ただし時刻順で出すのでPut時と順番
 これで要求された仕様は全部満たしたはず。
 残った TODO を転記しておく。
 
-TODO: Key, Value, Time がそれぞれ null のときのテストをやっていない	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16Test\KeyValueTimeTest.cs	126
+TODO: Key, Value がそれぞれ null のときのテストをやっていない	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16Test\KeyValueTimeTest.cs	126
 TODO: 次の Put()/MultiPut() の時刻が近いと、これでは前後関係がおかしくなる。	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16\TddbcDictionary.cs	79
 TODO: keyとvalueの型は? …分からないから、とりあえずstringにしとくか f(^^;	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16Test\TddbcDictionaryTest.cs	30
 TODO: Get(key)で、該当するkeyが無かった時の挙動が不明。Dumpした個数でテストケースを書いておく。	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16Test\TddbcDictionaryTest.cs	137
 
 これでコミット
 23:07 2011/08/03
+	Git tree: https://github.com/biac/tddbc-tokyo-1.6/tree/a5b64e6e3371bd3ba4c764204bde2a1eb50b1ccc
+	TddbcTokyo1.6_CS02b.zip
 
+23:39 2011/08/03
+不要なコメント等をクリーンアップしてコミット
+製品コードは合計140行くらい。テストケースは24個。
 
 
 

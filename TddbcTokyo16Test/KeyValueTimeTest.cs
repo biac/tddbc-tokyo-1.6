@@ -123,7 +123,7 @@ namespace TddbcTokyo16Test {
 			Assert.Throws<ArgumentException>(new TestDelegate(() => kvt1.CompareTo(kvp)));
 		}
 
-		//TODO: Key, Value, Time がそれぞれ null のときのテストをやっていない
+		//TODO: Key, Value がそれぞれ null のときのテストをやっていない
 
 	}
 }
