@@ -31,15 +31,27 @@ namespace TddbcTokyo16Test {
 			Assert.That(result, Is.EqualTo(value));
 		}
 
-		//[Test()]
-		//public void PutGetTest02_keyにnull_例外() {
-		//    const string value = "Test";
+		[Test()]
+		public void PutGetTest02_keyにnull_例外() {
+			const string value = "Test";
 
-		//    TddbcDictionary dic = new TddbcDictionary();
-		//    Assert.Throws<ArgumentNullException>(new TestDelegate(() => dic.Put(null, value)));
+			TddbcDictionary dic = new TddbcDictionary();
+			Assert.Throws<ArgumentNullException>(new TestDelegate(() => dic.Put(null, value)));
 
-		//    //※ 実装変更無しで GREEN だった。不要。
-		//}
+			//※ 実装変更無しで GREEN だった。不要。 → KeyValueTime の導入で RED になった。
+		}
+
+		// ↓ KeyValueTime の導入で追加
+		[Test()]
+		public void PutGetTest03_ひとつ登録_nullで取得() {
+			const string key = "AAA";
+			const string value = "Test";
+
+			TddbcDictionary dic = new TddbcDictionary();
+			dic.Put(key, value);
+
+			Assert.Throws<ArgumentNullException>(new TestDelegate(() => dic.Get(null)));
+		}
 
 		[Test()]
 		public void DumpTest01_2つ登録してDump_ただし2つめのvalueはnull() {
@@ -52,7 +64,8 @@ namespace TddbcTokyo16Test {
 			dic.Put(key1, value1);
 			dic.Put(key2, value2);
 
-			IList<KeyValuePair<string, string>> dump = dic.Dump();
+			//IList<KeyValuePair<string, string>> dump = dic.Dump();
+			IList<KeyValueTime> dump = dic.Dump();
 			Assert.That(dump[0].Key, Is.EqualTo(key1));
 			Assert.That(dump[0].Value, Is.EqualTo(value1));
 			Assert.That(dump[1].Key, Is.EqualTo(key2));
@@ -104,13 +117,13 @@ namespace TddbcTokyo16Test {
 		//    //※ 実装変更無しで GREEN だった。不要。
 		//}
 
-		//[Test()]
-		//public void DeleteTest03_keyにnull_例外() {
-		//    TddbcDictionary dic = new TddbcDictionary();
-		//    Assert.Throws<ArgumentNullException>(new TestDelegate(() => dic.Delete(null)));
+		[Test()]
+		public void DeleteTest03_keyにnull_例外() {
+			TddbcDictionary dic = new TddbcDictionary();
+			Assert.Throws<ArgumentNullException>(new TestDelegate(() => dic.Delete(null)));
 
-		//    //※ 実装変更無しで GREEN だった。不要。
-		//}
+			//※ 実装変更無しで GREEN だった。不要。 → KeyValueTime の導入で RED になった。
+		}
 
 
 
@@ -131,6 +144,9 @@ namespace TddbcTokyo16Test {
 
 			string result = dic.Get(key);
 			Assert.That(result, Is.EqualTo(value2));
+
+			// KeyValueTime の導入で、次が RED になる。(今までは、Dictionary<> が上手くやってくれていた)
+			Assert.That(dic.Dump().Count, Is.EqualTo(1));
 		}
 
 
@@ -162,6 +178,7 @@ namespace TddbcTokyo16Test {
 				};
 			dic.MultiPut(data);
 
+			Assert.That(dic.Dump().Count, Is.EqualTo(4));
 			Assert.That(dic.Get("Key1"), Is.EqualTo("Value1"));
 			Assert.That(dic.Get("Key2"), Is.EqualTo("Value2B"));
 			Assert.That(dic.Get("Key3"), Is.EqualTo("Value3"));
@@ -192,6 +209,28 @@ namespace TddbcTokyo16Test {
 			Assert.That(dic.Dump().Count, Is.EqualTo(1));
 			Assert.That(dic.Get("AAA"), Is.EqualTo("Test"));
 		}
+
+
+
+		/*
+		 ■ T16MAIN-5: putの引数でkey,value,date(時刻情報)を渡し、dumpを時間順に出力するように仕様変更
+			putの引数でkey,value,date(時刻情報)を渡せるようにする。
+			また、dump関数は時刻が新しい方から古い方へ順にkey、valueを出力するように変更する。
+			引数に複数指定して追加する関数の場合、後ろにあるものほど新しいとみなす。
+		 */
+		/*
+		 ※ 今までは key, value だけだったから、.NET Framework の KeyValuPair が入れ物に使えた。
+		  ここからは、key, value, time をセットで保持できる入れ物が必要になる。
+		  その入れ物として Tupple を使いたい誘惑に駆られるが… Dump() で public に公開する型になるので、Tupple ではマズい。
+			※※ Tupple では、KeyValuPair とインターフェースが合わない (Key, Value プロパティが無い)
+			※※ Tupple には何が入っているのか、ドキュメントが無いと分からない。private で使う分には便利だが、public にすべきではない。
+		  → (1) KeyValuPair を拡張したカタチの入れ物 KeyValueTime を、新しく作る。
+
+		 ※ (2) TDD三原則から外れて、先に実装のメンバー変数 _dic の型を変えてしまう(複雑になるので、リファクタリングとは呼ばない)。
+		  オールGREENになるようにしてから、テストケースを増やす。
+		 	※※ null でレッドになるパターンが出て来る。コメントアウトしていたテストケースから、レッドになるものを復活させる。
+			※※ 他にも null を渡すテストケースが新たに必要になるかもしれない。製品コードを見て、検討する。
+		 */
 
 
 	}
