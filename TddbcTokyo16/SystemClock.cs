@@ -1,7 +1,8 @@
 ﻿using System;
 
 namespace TddbcTokyo16 {
-	internal class SystemClock {
+	internal static class SystemClock {
+
 		public static DateTime Now {
 			get {
 #if DEBUG		

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace TddbcTokyo16 {
-	public class TddbcDictionary {
+	public class TddbcKeyValueStore {
 
 		private SortedSet<KeyValueTime> _dic = new SortedSet<KeyValueTime>();
 
@@ -12,25 +12,28 @@ namespace TddbcTokyo16 {
 		}
 
 		private void Put(string key, string value, DateTime time) {
-			KeyValueTime existing = this._dic.FirstOrDefault(kvt => string.Equals(kvt.Key, key));
-			if (existing != null) {
-				this._dic.Remove(existing);	//一旦削除して、改めて挿入しなおせば、正しくソートされる。
+			//KeyValueTime existing = this._dic.FirstOrDefault(kvt => string.Equals(kvt.Key, key));
+			//if (existing != null) {
+			//    this._dic.Remove(existing);	//一旦削除して、改めて挿入しなおせば、正しくソートされる。
 
-				existing.Value = value;
-				existing.Time = time;
+			//    existing.Value = value;
+			//    existing.Time = time;
 
-				this._dic.Add(existing);
-				return;
-			}
+			//    this._dic.Add(existing);
+			//    return;
+			//}
+			this._dic.RemoveWhere(kvt => (kvt.Key == key));
 	
 			this._dic.Add(new KeyValueTime(key, value, time));
 		}
 
 		public void MultiPut(IList<KeyValuePair<string, string>> data) {
-			foreach (var kv in data) {
-				if (kv.Key == null)
-					throw new ArgumentNullException();
-			}
+			//foreach (var kv in data) {
+			//    if (kv.Key == null)
+			//        throw new ArgumentNullException();
+			//}
+			if(data.Count(kv => (kv.Key == null)) > 0)
+				throw new ArgumentNullException();
 
 			DateTime time = SystemClock.Now;
 			foreach (var kv in data) {
@@ -45,7 +48,12 @@ namespace TddbcTokyo16 {
 			if (key == null)
 				throw new ArgumentNullException();
 
-			return this._dic.First(kvt => kvt.Key == key).Value;	//TODO: 一致する key が無いと例外(?)
+			//return this._dic.First(kvt => kvt.Key == key).Value;	//TODO: 一致する key が無いと例外(?)
+			KeyValueTime data = this._dic.FirstOrDefault(kvt => (kvt.Key == key));
+			if (data == null)
+				throw new KeyNotFoundException();
+
+			return data.Value;
 		}
 
 

@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="KeyValueTimeTest.cs" />
     <Compile Include="SystemClockTest.cs" />
-    <Compile Include="TddbcDictionaryTest.cs" />
+    <Compile Include="TddbcKeyValueStoreTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

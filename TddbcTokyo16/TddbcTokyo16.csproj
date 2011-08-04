@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="KeyValueTime.cs" />
     <Compile Include="SystemClock.cs" />
-    <Compile Include="TddbcDictionary.cs" />
+    <Compile Include="TddbcKeyValueStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

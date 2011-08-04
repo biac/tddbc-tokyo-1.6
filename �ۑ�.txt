@@ -172,3 +172,31 @@ TODO: Get(key)で、該当するkeyが無かった時の挙動が不明。Dump�
 	TddbcTokyo1.6_CS02c.zip
 
 
+
+14:39 2011/08/04
+
+カバレッジ確認 PartCover - SystemClock を static class にしていなかったので、.ctor を通していないと怒られた。→ static クラスに
+不要と思われるテストケースを削除
+	PutGetTest03_2回登録ただし同じkey()
+	Put2Test01_ひとつ登録_ひとつ取得()
+再度カバレッジ確認 - 100%
+
+リファクタ
+・Put(key, value, time) で key に一致する既存のデータを探して書き換えているところを、this._dic.RemoveWhere(kvt => (kvt.Key == key)); に。
+・MultiPut() で、foreach で key が null のものを探しているところを、foreach をやめてラムダ式に。
+・クラス名 TddbcDictionary → TddbcKeyValueStore (テストも)
+
+コミット
+14:55 2011/08/04
+
+
+TddbcKeyValueStoreTest の中身を配置替え。仕様のコメントを先頭にまとめて、テストケースは実装のメソッドと同じ並びに。
+
+TODO に残しておいたテストを追加
+・GetTest01_存在しないキーを指定()
+	KeyNotFoundException を出す
+
+
+
+
+

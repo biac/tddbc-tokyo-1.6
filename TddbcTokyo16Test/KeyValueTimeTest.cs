@@ -44,11 +44,12 @@ namespace TddbcTokyo16Test {
 		// ※ T16MAIN-8 の仕様変更で、null はセット出来なくなった。
 
 
+
 		// IComparable の実装: SortedSet に突っ込みたいので。
 		// ※ 型が合わないときは ArgumentException
 
 		[Test()]
-		public void CompareToTest01_Key_Value_Timeともnullではなく等しい() {
+		public void CompareToTest01_Key_Valueともnullではなく等しい() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);
 			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value1", dt);
@@ -57,7 +58,7 @@ namespace TddbcTokyo16Test {
 		}
 
 		[Test()]
-		public void CompareToTest02_Key_Value_Timeともnullではない_Timeだけ違う() {
+		public void CompareToTest02_Key_Valueともnullではない_Timeだけ違う() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);
 			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value1", dt.AddMilliseconds(1.0)); //新しい → 前に来る
@@ -67,7 +68,7 @@ namespace TddbcTokyo16Test {
 		}
 
 		[Test()]
-		public void CompareToTest03_Key_Value_Timeともnullではない_ValueとTimeが違う_Timeが優先() {
+		public void CompareToTest03_Key_Valueともnullではない_ValueとTimeが違う_Timeが優先() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);	//Valueの比較だけならこっちが前だけど…
 			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value2", dt.AddSeconds(1.0)); //新しい → 前に来る
@@ -77,7 +78,7 @@ namespace TddbcTokyo16Test {
 		}
 
 		[Test()]
-		public void CompareToTest04_Key_Value_Timeともnullではない_KeyとTimeが違う_Timeが優先() {
+		public void CompareToTest04_Key_Valueともnullではない_KeyとTimeが違う_Timeが優先() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);	//Keyの比較だけならこっちが前だけど…
 			KeyValueTime kvt2 = new KeyValueTime("BBB", "Value1", dt.AddSeconds(1.0)); //新しい → 前に来る
@@ -87,7 +88,7 @@ namespace TddbcTokyo16Test {
 		}
 
 		[Test()]
-		public void CompareToTest05_Key_Value_Timeともnullではない_Timeが同じ_Valueでの比較になる() {
+		public void CompareToTest05_Key_Valueともnullではない_Timeが同じ_Valueでの比較になる() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "ValueB", dt);	
 			KeyValueTime kvt2 = new KeyValueTime("BBB", "ValueA", dt);	//Valueの比較で、こっちが前に来る 
@@ -97,7 +98,7 @@ namespace TddbcTokyo16Test {
 		}
 
 		[Test()]
-		public void CompareToTest06_Key_Value_Timeともnullではない_TimeもValueも同じ_Keyでの比較になる() {
+		public void CompareToTest06_Key_Valueともnullではない_TimeもValueも同じ_Keyでの比較になる() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("BBB", "Value", dt);
 			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value", dt);	//Keyの比較で、こっちが前に来る 
@@ -123,7 +124,18 @@ namespace TddbcTokyo16Test {
 			Assert.Throws<ArgumentException>(new TestDelegate(() => kvt1.CompareTo(kvp)));
 		}
 
-		//TODO: Key, Value がそれぞれ null のときのテストをやっていない
+
+		//[Test()]
+		//public void CompareToTest09_片方のValueがnull_Timeが同じ_Valueでの比較になる() {
+		//    DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
+		//    KeyValueTime kvt1 = new KeyValueTime("AAA", "ValueB", dt);
+		//    KeyValueTime kvt2 = new KeyValueTime("BBB", null, dt);	//Valueの比較で、こっちが前に来る 
+
+		//    Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
+		//    Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
+
+		//    // ※ RED にならない。内部的に string.Compare() を呼び出していて、null も OK。Key も同じく。
+		//}
 
 	}
 }
