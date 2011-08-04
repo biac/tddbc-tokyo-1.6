@@ -44,11 +44,11 @@ namespace TddbcTokyo16 {
 
 
 		public IList<KeyValueTime> Dump() {
-			return this._dic.ToList();
+			return this._dic.Reverse().ToList();
 		}
 
 		public IList<KeyValueTime> Dump(DateTime time) {
-			return this._dic.Where(kvt => (kvt.Time >= time)).ToList();
+			return this._dic.Reverse().Where(kvt => (kvt.Time >= time)).ToList();
 		}
 
 

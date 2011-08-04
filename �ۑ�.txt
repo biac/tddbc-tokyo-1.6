@@ -207,7 +207,26 @@ TODO: 次の Put()/MultiPut() の時刻が近いと、これでは前後関係�
 
 コミット
 15:44 2011/08/04
+	Git tree: https://github.com/biac/tddbc-tokyo-1.6/tree/27cf40cbd475ca4f53e55212bf3c568f5e644d3c
+	TddbcTokyo1.6_CS03.zip
 
+
+16:18 2011/08/04
+内部設計変更: KeyValueTime.CompareTo() 時間の逆順にしているが、将来混乱をもたらすかもしれないので正順にしておく。
+1. CompareToTest02 ～ 04 を修正、RED 確認
+2. KeyValueTime.CompareTo() を修正。1.の RED は GREEN に。しかし、以下は新たに RED に。
+	DumpTest01_2つ登録してDump_ただし2つめのvalueはnull()
+	MultiPutTest01_複数まとめて追加_重複キーあり_既存キーもあり()
+	※ MultiPutTest は、テスト内で Dump() を使っているため。
+3. Dump() を修正して、オール GREEN!
+4. おっと、Dump(DateTime) を修正していない!
+	Dump02Test01_2つ登録してDump_時刻指定でひとつしか出ない() を、
+	Dump02Test01_3つ登録してDump_時刻指定で2つしか出ない() に変えて、RED にする。
+	予定通り、逆順になっていなくて RED になるので、Dump(DateTime) を修正。
+オール GREEN!
+
+コミット
+16:32 2011/08/04
 
 
 

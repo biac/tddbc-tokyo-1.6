@@ -222,19 +222,24 @@ namespace TddbcTokyo16Test {
 			DateTime time1 = new DateTime(2011, 8, 3, 17, 40, 0);
 			const string key2 = "BBB";
 			const string value2 = "Test2";
-			DateTime time2 = time1.AddSeconds(1.0); //こっちが新しい → Dump(time2) で、これだけが出て来る
+			DateTime time2 = time1.AddSeconds(1.0); //こっちが新しい → Dump(time2) で、これ以降が出てくる
+			const string key3 = "CCC";
+			const string value3 = "Test3";
+			DateTime time3 = time2.AddSeconds(1.0);
 
 			TddbcKeyValueStore dic = new TddbcKeyValueStore();
 			SystemClock.TestSetTime(time1);
 			dic.Put(key1, value1);
 			SystemClock.TestSetTime(time2);
 			dic.Put(key2, value2);
+			SystemClock.TestSetTime(time3);
+			dic.Put(key3, value3);
 
 			IList<KeyValueTime> dump = dic.Dump(time2);
-			Assert.That(dump.Count, Is.EqualTo(1));
-			Assert.That(dump[0].Key, Is.EqualTo(key2));
-			Assert.That(dump[0].Value, Is.EqualTo(value2));
-			Assert.That(dump[0].Time, Is.EqualTo(time2));
+			Assert.That(dump.Count, Is.EqualTo(2));
+			Assert.That(dump[0].Key, Is.EqualTo(key3));
+			Assert.That(dump[0].Value, Is.EqualTo(value3));
+			Assert.That(dump[0].Time, Is.EqualTo(time3));
 		}
 #endif
 

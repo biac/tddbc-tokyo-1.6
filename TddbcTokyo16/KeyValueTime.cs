@@ -31,7 +31,7 @@ namespace TddbcTokyo16 {
 
 
 			if(kvt.Time != this.Time)
-				return DateTime.Compare(kvt.Time, this.Time);
+				return DateTime.Compare(this.Time, kvt.Time);
 
 			if(kvt.Value != this.Value)
 				return string.Compare(this.Value, kvt.Value);

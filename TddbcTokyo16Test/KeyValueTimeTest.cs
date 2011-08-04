@@ -61,7 +61,7 @@ namespace TddbcTokyo16Test {
 		public void CompareToTest02_Key_Valueともnullではない_Timeだけ違う() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);
-			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value1", dt.AddMilliseconds(1.0)); //新しい → 前に来る
+			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value1", dt.AddMilliseconds(-1.0)); //古い → 前に来る
 
 			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
 			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
@@ -71,7 +71,7 @@ namespace TddbcTokyo16Test {
 		public void CompareToTest03_Key_Valueともnullではない_ValueとTimeが違う_Timeが優先() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);	//Valueの比較だけならこっちが前だけど…
-			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value2", dt.AddSeconds(1.0)); //新しい → 前に来る
+			KeyValueTime kvt2 = new KeyValueTime("AAA", "Value2", dt.AddSeconds(-1.0)); //古い → 前に来る
 
 			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
 			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
@@ -81,7 +81,7 @@ namespace TddbcTokyo16Test {
 		public void CompareToTest04_Key_Valueともnullではない_KeyとTimeが違う_Timeが優先() {
 			DateTime dt = new DateTime(2011, 8, 3, 13, 55, 0);
 			KeyValueTime kvt1 = new KeyValueTime("AAA", "Value1", dt);	//Keyの比較だけならこっちが前だけど…
-			KeyValueTime kvt2 = new KeyValueTime("BBB", "Value1", dt.AddSeconds(1.0)); //新しい → 前に来る
+			KeyValueTime kvt2 = new KeyValueTime("BBB", "Value1", dt.AddSeconds(-1.0)); //古い → 前に来る
 
 			Assert.That(kvt1.CompareTo(kvt2), Is.GreaterThan(0));
 			Assert.That(kvt2.CompareTo(kvt1), Is.LessThan(0));
