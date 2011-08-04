@@ -1,6 +1,7 @@
 ﻿using System;
 
 namespace TddbcTokyo16 {
+
 	internal static class SystemClock {
 
 		public static DateTime Now {
@@ -13,7 +14,7 @@ namespace TddbcTokyo16 {
 			}
 		}
 
-	
+
 #if DEBUG		
 		static DateTime? _testTime;
 

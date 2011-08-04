@@ -186,7 +186,6 @@ TODO: Get(key)で、該当するkeyが無かった時の挙動が不明。Dump�
 ・MultiPut() で、foreach で key が null のものを探しているところを、foreach をやめてラムダ式に。
 ・クラス名 TddbcDictionary → TddbcKeyValueStore (テストも)
 
-コミット
 14:55 2011/08/04
 
 
@@ -195,6 +194,21 @@ TddbcKeyValueStoreTest の中身を配置替え。仕様のコメントを先頭
 TODO に残しておいたテストを追加
 ・GetTest01_存在しないキーを指定()
 	KeyNotFoundException を出す
+
+コミット
+15:36 2011/08/04
+
+製品コードの不要なコメント等を整理
+
+これで一応の完成。
+残った TODO は 2つ。
+TODO: keyとvalueの型は? …分からないから、とりあえずstringにしとくか f(^^;	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16Test\TddbcKeyValueStoreTest.cs	49
+TODO: 次の Put()/MultiPut() の時刻が近いと、これでは前後関係がおかしくなる。	D:\$projects\TDDBC東京1.6\TddbcTokyo1.6課題\TddbcTokyo16\TddbcKeyValueStore.cs	29
+
+コミット
+15:44 2011/08/04
+
+
 
 
 

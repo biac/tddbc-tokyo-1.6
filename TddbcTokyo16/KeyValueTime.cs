@@ -38,6 +38,5 @@ namespace TddbcTokyo16 {
 
 			return string.Compare(this.Key, kvt.Key);
 		}
-
 	}
 }
